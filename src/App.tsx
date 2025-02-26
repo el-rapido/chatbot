@@ -22,7 +22,8 @@ const App: React.FC = () => {
 // Wrapper to pass the current location to the Chatbot
 const ChatbotWrapper: React.FC = () => {
   const location = useLocation();
-  const currentPage = location.pathname.slice(1) || 'home'; // Extract page name from route
+  const currentPage = location.pathname.slice(1).replace(/\/$/, '').toLowerCase() || 'home';
+  console.log('Normalized Current Page:', currentPage); // Log the normalized value
   return <Chatbot currentPage={currentPage} />;
 };
 

@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './chat.css';
-import questionsJson from './questions.json'; // Import the JSON file
 
 // Define the type for a message
 type Message = {
@@ -15,22 +14,45 @@ type Question = {
   options: { label: string; nextQuestionId?: string; answer?: string }[];
 };
 
-// Define the type for the entire questions JSON object
-type QuestionsJson = {
-  [key: string]: Record<string, Question>; // Each key maps to an object of questions
-};
-
-const questionsData: QuestionsJson = questionsJson; // Cast the imported JSON to the defined type
-const defaultQuestions = questionsData.home; // Default to home questions if no match
+// Type declaration for import.meta.glob (if using Vite)
+declare const import_meta_glob: (pattern: string) => Record<string, () => Promise<any>>;
 
 const Chatbot: React.FC<{ currentPage: string }> = ({ currentPage }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentQuestionId, setCurrentQuestionId] = useState<string>('q1');
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [userInput, setUserInput] = useState<string>('');
+  const [questions, setQuestions] = useState<Record<string, Question>>({});
 
-  // Get the questions for the current page
-  const questions = questionsData[currentPage] || defaultQuestions;
+  // Dynamically load the JSON file based on the current page name
+  useEffect(() => {
+    const loadQuestionData = async () => {
+      try {
+        // Create a dynamic import with explicit path
+        console.log(`Attempting to load ${currentPage}.json`);
+        
+        // This approach works with both webpack and vite
+        // Using a more specific import path with error handling
+        try {
+          // First try to load the specific page JSON
+          const module = await import(/* @vite-ignore */ `../public/json/${currentPage}.json`);
+          console.log(`Successfully loaded ${currentPage}.json`);
+          setQuestions(module.default || module);
+        } catch (specificError) {
+          console.warn(`Couldn't load ${currentPage}.json: ${specificError}`);
+          
+          // Fall back to home.json
+          const fallbackModule = await import(/* @vite-ignore */ '../public/json/home.json');
+          console.log('Falling back to home.json');
+          setQuestions(fallbackModule.default || fallbackModule);
+        }
+      } catch (error) {
+        console.error('Error loading question data:', error);
+      }
+    };
+
+    loadQuestionData();
+  }, [currentPage]);
 
   // Function to handle user selection
   const handleOptionClick = (option: { label: string; nextQuestionId?: string; answer?: string }) => {
@@ -103,12 +125,14 @@ const Chatbot: React.FC<{ currentPage: string }> = ({ currentPage }) => {
                 {message.text}
               </div>
             ))}
-            <div className="message bot-message">{currentQuestion.text}</div>
+            {currentQuestion && (
+              <div className="message bot-message">{currentQuestion.text}</div>
+            )}
           </div>
 
           {/* Options */}
           <div className="options">
-            {currentQuestion.options.map((option, index) => (
+            {currentQuestion?.options.map((option, index) => (
               <button
                 key={index}
                 className="option-button"

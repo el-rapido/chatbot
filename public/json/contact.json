@@ -1,0 +1,11 @@
+{
+    "q1": {
+      "id": "q1",
+      "text": "Welcome to the Contact Page! How can I help you?",
+      "options": [
+        { "label": "Email us", "answer": "You can email us at support@example.com." },
+        { "label": "Call us", "answer": "You can call us at +1234567890." },
+        { "label": "Exit", "answer": "Thank you for visiting! Have a great day!" }
+      ]
+    }
+  }

@@ -1,0 +1,11 @@
+{
+    "q1": {
+      "id": "q1",
+      "text": "Welcome to the Services Page! What would you like to know?",
+      "options": [
+        { "label": "Learn about Service A", "answer": "Service A is our premium offering." },
+        { "label": "Learn about Service B", "answer": "Service B is tailored for small businesses." },
+        { "label": "Exit", "answer": "Thank you for visiting! Have a great day!" }
+      ]
+    }
+  }
