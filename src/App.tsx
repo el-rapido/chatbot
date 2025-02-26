@@ -1,26 +1,29 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import Chatbot from './chat';
 
-function App() {
+const Home = () => <div>Home Page</div>;
+const Services = () => <div>Services Page</div>;
+const Contact = () => <div>Contact Page</div>;
+
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+      <ChatbotWrapper />
+    </Router>
   );
-}
+};
+
+// Wrapper to pass the current location to the Chatbot
+const ChatbotWrapper: React.FC = () => {
+  const location = useLocation();
+  const currentPage = location.pathname.slice(1) || 'home'; // Extract page name from route
+  return <Chatbot currentPage={currentPage} />;
+};
 
 export default App;
